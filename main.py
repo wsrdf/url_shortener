@@ -1,11 +1,13 @@
 from contextlib import asynccontextmanager
 
 from fastapi import Body, FastAPI
+from pydantic import HttpUrl
 
 from database.db import engine
 from database.models import Base
 
 from service import generate_short_url
+
 
 @asynccontextmanager # later put alembic
 async def lifespan(app: FastAPI):
@@ -13,14 +15,15 @@ async def lifespan(app: FastAPI):
         await connection.run_sync(Base.metadata.create_all)
     yield
 
+
 app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/short_url")
-async def generate_slug(
-    long_url: str = Body(embed=True),
+async def generate_slug( 
+    long_url: HttpUrl = Body(embed=True),
 ):
-    new_slug = await generate_short_url(long_url)
+    new_slug = await generate_short_url(str(long_url))
     return {"data": new_slug}
 
 
