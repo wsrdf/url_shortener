@@ -1,0 +1,23 @@
+[project]
+name = "url-shortener"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "student3020707", email = "email.kirill.com@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "asyncpg>=0.32.0",
+    "fastapi>=0.161.1",
+    "greenlet>=3.5.6",
+    "sqlalchemy>=2.1.6",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+url-shortener = "url_shortener:main"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"
