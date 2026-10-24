@@ -1,12 +1,14 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Body, FastAPI
+from fastapi import Body, FastAPI, status, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import HttpUrl
 
 from database.db import engine
 from database.models import Base
 
-from service import generate_short_url
+from exceptions import NoLongUrlFoundError
+from service import generate_short_url, get_url_by_slug
 
 
 @asynccontextmanager # later put alembic
@@ -27,7 +29,11 @@ async def generate_slug(
     return {"data": new_slug}
 
 
-# @app.get("/{slug}")
-# async def redirect_to_url(slug: str):
-#     return ...
+@app.get("/{slug}")
+async def redirect_to_url(slug: str):
+    try:
+        long_url = await get_url_by_slug(slug)
+    except NoLongUrlFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+    return RedirectResponse(url=long_url, status_code=status.HTTP_302_FOUND)
 
